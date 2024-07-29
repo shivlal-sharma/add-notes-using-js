@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Notes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+            background: url('image/bg5.avif')no-repeat center center/cover;
+        }
+
+        .main {
+            box-shadow: 0px 0px 15px rgb(4, 0, 255);
+            width: 30vw;
+            height: 40vh;
+            margin: 50px 20px;
+        }
+
+        .tool {
+            display: flex;
+            justify-content: right;
+            align-items: center;
+            background-color: #fff;
+            padding: 3px 10px;
+            height: 30px;
+            border-bottom: 2px solid black;
+        }
+
+        .tool i {
+            margin: 0px 5px;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 90%;
+            box-sizing: border-box;
+            resize: none;
+            border: none;
+            outline: none;
+            padding: 5px 10px;
+            font-size: 1.1rem;
+        }
+
+        button {
+            padding: 3px 5px;
+            background-color: black;
+            color: #fff;
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            font-size: 1.1rem;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <button><i class="fa-sharp fa-solid fa-plus"></i> Add Notes</button>
+    </div>
+
+    <script>
+        let button = document.querySelector('button');
+        let container = document.querySelector('.container');
+        let trashButton = document.querySelector('.remove');
+        let saveButton = document.querySelector('.save');
+
+        const addNote = (text = '') => {
+            const main = document.createElement('div');
+            main.classList.add('main');
+            main.innerHTML = `<div class="tool">
+                <i class="save fa-sharp fa-solid fa-floppy-disk"></i>
+                <i class="remove fa-sharp fa-solid fa-trash"></i>
+            </div>
+            <textarea>${text}</textarea>`;
+            container.appendChild(main);
+
+            main.querySelector('.remove').addEventListener('click', () => {
+                main.remove();
+                saveNote();
+            });
+
+            main.querySelector('.save').addEventListener('click', () => {
+                saveNote()
+            });
+
+            main.querySelector('textarea').addEventListener('focusout',()=>{
+                saveNote();
+            });
+
+        }
+
+        const saveNote = () => {
+            let notes = document.querySelectorAll('.main textarea');
+            let data = [];
+            notes.forEach((note) => {
+                data.push(note.value);
+            });
+
+            if(notes.length ==  0){
+                localStorage.removeItem('notes');
+                location.replace('notes.html');
+            }
+            else{
+                localStorage.setItem('notes', JSON.stringify(data));
+            }
+        }
+
+        (
+            function () {
+                let lsnotes = JSON.parse(localStorage.getItem('notes'));
+                if (lsnotes == null) {
+                    addNote();
+                }
+                else {
+                    lsnotes.forEach((lnote) => {
+                        addNote(lnote);
+                    });
+                }
+            }
+        )()
+
+        button.addEventListener('click', () => {
+            addNote();
+        });
+    </script>
+</body>
+
+</html>
